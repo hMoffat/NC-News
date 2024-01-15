@@ -64,3 +64,31 @@ describe("/api/topics", () => {
     });
   });
 });
+
+describe("api/articles", () => {
+  describe("GET api/articles/:article_id", () => {
+    test("Status 200: responds with corresponding article object to requested id", () => {
+      return request(app)
+        .get("/api/articles/4")
+        .expect(200)
+        .then(({ body }) => {
+          //check id
+          expect(body.article_id).toBe(4);
+          //rest
+          expect(body).toHaveProperty("author", expect.any(String));
+          expect(body).toHaveProperty("title", expect.any(String));
+          expect(body).toHaveProperty("body", expect.any(String));
+          expect(body).toHaveProperty("topic", expect.any(String));
+          expect(body).toHaveProperty("created_at", expect.any(String));
+          expect(body).toHaveProperty("votes", expect.any(Number));
+          expect(body).toHaveProperty("article_img_url", expect.any(String));
+        });
+    });
+  });
+  //Error handling
+  //valid + nonexistant
+  // invalid - such as?
+  // others?
+
+  // remember to add description to endpoint json
+});
