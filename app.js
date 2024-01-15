@@ -1,6 +1,9 @@
 const express = require("express");
 const app = express();
 const { getTopics } = require("./controllers/topics.controller");
+const { getEndpoints } = require("./controllers/endpoints.controller");
+
+app.get("/api", getEndpoints);
 
 app.get("/api/topics", getTopics);
 
@@ -11,7 +14,6 @@ app.all("*", (req, res) => {
 
 //end of middleware error handling
 app.use((err, req, res, next) => {
-  console.log("Error: ", err);
   res.status(500).send({ message: "Server Error: something went wrong." });
 });
 
