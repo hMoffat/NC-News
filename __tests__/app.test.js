@@ -23,6 +23,14 @@ describe("Bad path", () => {
           expect(res.body.message).toBe("Path does not exist");
         });
     });
+    test("None existant path on api/articles/:artcle_id", () => {
+      return request(app)
+        .get("/api/aricles/10")
+        .expect(404)
+        .then((res) => {
+          expect(res.body.message).toBe("Path does not exist");
+        });
+    });
   });
 });
 
@@ -54,14 +62,6 @@ describe("/api/topics", () => {
           });
         });
     });
-    test("Status 404: responds with 'Path does not exist' message", () => {
-      return request(app)
-        .get("/api/topcs")
-        .expect(404)
-        .then((res) => {
-          expect(res.body.message).toBe("Path does not exist");
-        });
-    });
   });
 });
 
@@ -84,10 +84,11 @@ describe("api/articles", () => {
           expect(body).toHaveProperty("article_img_url", expect.any(String));
         });
     });
+    test("Status :", () => {});
   });
   //Error handling
-  //valid + nonexistant
-  // invalid - such as?
+  //404: valid + nonexistant
+  // 400: invalid - like wrong datatype, banana
   // others?
 
   // remember to add description to endpoint json
