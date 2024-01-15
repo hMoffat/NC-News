@@ -12,9 +12,9 @@ afterAll(() => {
   return db.end();
 });
 
-describe("/api/snacks", () => {
-  describe("GET /api/snacks", () => {
-    it("Status 200: responds with an array of topic objects containing the slug and description", () => {
+describe("/api/topics", () => {
+  describe("GET /api/topics", () => {
+    test("Status 200: responds with an array of topic objects containing the slug and description", () => {
       return request(app)
         .get("/api/topics")
         .expect(200)
@@ -25,6 +25,14 @@ describe("/api/snacks", () => {
             expect(topic).toHaveProperty("description", expect.any(String));
             expect(topic).toHaveProperty("slug", expect.any(String));
           });
+        });
+    });
+    test("Status 404: responds with 'Path does not exist' message", () => {
+      return request(app)
+        .get("/api/topcs")
+        .expect(404)
+        .then((res) => {
+          expect(res.body.message).toBe("Path does not exist");
         });
     });
   });
