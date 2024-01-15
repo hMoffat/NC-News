@@ -14,7 +14,9 @@ app.all("*", (req, res) => {
 
 //end of middleware error handling
 app.use((err, req, res, next) => {
-  res.status(500).send({ message: "Server Error: something went wrong." });
+  res
+    .status(500)
+    .send({ message: "Server Error: something went wrong.", error: err });
 });
 
 module.exports = app;

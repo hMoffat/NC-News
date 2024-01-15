@@ -13,6 +13,19 @@ afterAll(() => {
   return db.end();
 });
 
+describe("Bad path", () => {
+  describe("Status 404: responds with 'Path does not exist' message, for: ", () => {
+    test("None existant path on /api/topics", () => {
+      return request(app)
+        .get("/api/topcs")
+        .expect(404)
+        .then((res) => {
+          expect(res.body.message).toBe("Path does not exist");
+        });
+    });
+  });
+});
+
 describe("/api", () => {
   describe("GET /api", () => {
     test("Status 200: responds with an object describing all available endpoints on the api.", () => {
