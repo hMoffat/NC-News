@@ -15,8 +15,11 @@ app.all("*", (req, res) => {
   res.status(404).send({ message: "Path does not exist" });
 });
 
-//end of middleware error handling
 app.use((err, req, res, next) => {
+  const psqlCodes = ["22P02"];
+  if (psqlCodes.includes(err.code)) {
+    res.status(400).send({ message: "Bad request" });
+  }
   if (err.message) {
     const { status, message } = err;
     res.status(status).send({ message });
@@ -24,6 +27,8 @@ app.use((err, req, res, next) => {
     next(err);
   }
 });
+
+//end of middleware error handling
 app.use((err, req, res, next) => {
   res
     .status(500)

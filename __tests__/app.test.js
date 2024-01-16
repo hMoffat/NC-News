@@ -34,6 +34,19 @@ describe("Bad path", () => {
   });
 });
 
+describe("Bad request", () => {
+  describe("Status 400: Responds with 'Bad request' message, for:", () => {
+    test("Invalid id on GET api/articles/:article_id", () => {
+      return request(app)
+        .get("/api/articles/banana")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+  });
+});
+
 describe("/api", () => {
   describe("GET /api", () => {
     test("Status 200: responds with an object describing all available endpoints on the api.", () => {
@@ -93,10 +106,6 @@ describe("api/articles", () => {
         });
     });
   });
-  //Error handling
-  //404: valid + nonexistant
-  // 400: invalid - like wrong datatype, banana
-  // others?
 
   // remember to add description to endpoint json
 });
