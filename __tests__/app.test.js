@@ -19,16 +19,16 @@ describe("Bad path", () => {
       return request(app)
         .get("/api/topcs")
         .expect(404)
-        .then((res) => {
-          expect(res.body.message).toBe("Path does not exist");
+        .then(({ body }) => {
+          expect(body.message).toBe("Path does not exist");
         });
     });
     test("None existant path on api/articles/:artcle_id", () => {
       return request(app)
         .get("/api/aricles/10")
         .expect(404)
-        .then((res) => {
-          expect(res.body.message).toBe("Path does not exist");
+        .then(({ body }) => {
+          expect(body.message).toBe("Path does not exist");
         });
     });
   });
@@ -84,7 +84,14 @@ describe("api/articles", () => {
           expect(body).toHaveProperty("article_img_url", expect.any(String));
         });
     });
-    test("Status :", () => {});
+    test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
+      return request(app)
+        .get("/api/articles/100")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
   });
   //Error handling
   //404: valid + nonexistant
