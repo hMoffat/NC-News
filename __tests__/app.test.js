@@ -13,6 +13,40 @@ afterAll(() => {
   return db.end();
 });
 
+describe("Bad path", () => {
+  describe("Status 404: responds with 'Path does not exist' message, for: ", () => {
+    test("None existant path on /api/topics", () => {
+      return request(app)
+        .get("/api/topcs")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Path does not exist");
+        });
+    });
+    test("None existant path on api/articles/:artcle_id", () => {
+      return request(app)
+        .get("/api/aricles/10")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Path does not exist");
+        });
+    });
+  });
+});
+
+describe("Bad request", () => {
+  describe("Status 400: Responds with 'Bad request' message, for:", () => {
+    test("Invalid id on GET api/articles/:article_id", () => {
+      return request(app)
+        .get("/api/articles/banana")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+  });
+});
+
 describe("/api", () => {
   describe("GET /api", () => {
     test("Status 200: responds with an object describing all available endpoints on the api.", () => {
@@ -41,13 +75,37 @@ describe("/api/topics", () => {
           });
         });
     });
-    test("Status 404: responds with 'Path does not exist' message", () => {
+  });
+});
+
+describe("api/articles", () => {
+  describe("GET api/articles/:article_id", () => {
+    test("Status 200: responds with corresponding article object to requested id", () => {
       return request(app)
-        .get("/api/topcs")
+        .get("/api/articles/4")
+        .expect(200)
+        .then(({ body }) => {
+          //check id
+          expect(body.article_id).toBe(4);
+          //rest
+          expect(body).toHaveProperty("author", expect.any(String));
+          expect(body).toHaveProperty("title", expect.any(String));
+          expect(body).toHaveProperty("body", expect.any(String));
+          expect(body).toHaveProperty("topic", expect.any(String));
+          expect(body).toHaveProperty("created_at", expect.any(String));
+          expect(body).toHaveProperty("votes", expect.any(Number));
+          expect(body).toHaveProperty("article_img_url", expect.any(String));
+        });
+    });
+    test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
+      return request(app)
+        .get("/api/articles/100")
         .expect(404)
-        .then((res) => {
-          expect(res.body.message).toBe("Path does not exist");
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
         });
     });
   });
+
+  // remember to add description to endpoint json
 });
