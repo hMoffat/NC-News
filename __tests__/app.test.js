@@ -31,6 +31,14 @@ describe("Bad path", () => {
           expect(body.message).toBe("Path does not exist");
         });
     });
+    test("None existant path on api/articles/", () => {
+      return request(app)
+        .get("/api/aricles")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Path does not exist");
+        });
+    });
   });
 });
 
@@ -106,6 +114,30 @@ describe("api/articles", () => {
         });
     });
   });
+  describe("GET api/articles", () => {
+    test("Status 200: responds with an array of article objects", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.length).toBe(13);
+          expect(body).toBeSortedBy("created_at");
+          //descending date order
+          body.forEach((article) => {
+            expect(article).toHaveProperty("author", expect.any(String));
+            expect(article).toHaveProperty("title", expect.any(String));
+            expect(article).toHaveProperty("article_id", expect.any(Number));
+            expect(article).toHaveProperty("topic", expect.any(String));
+            expect(article).toHaveProperty("created_at", expect.any(String));
+            expect(article).toHaveProperty("votes", expect.any(Number));
+            expect(article).toHaveProperty(
+              "article_img_url",
+              expect.any(String)
+            );
 
-  // remember to add description to endpoint json
+            expect(article).not.toHaveProperty("body");
+          });
+        });
+    });
+  });
 });
