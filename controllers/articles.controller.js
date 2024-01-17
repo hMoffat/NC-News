@@ -21,9 +21,13 @@ exports.getArticles = (req, res) => {
   });
 };
 
-exports.getCommentsByArticleId = (req, res) => {
+exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
-  fetchCommentsByArticleId(article_id).then((rows) => {
-    res.status(200).send(rows);
-  });
+  fetchCommentsByArticleId(article_id, next)
+    .then((rows) => {
+      res.status(200).send(rows);
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

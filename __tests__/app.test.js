@@ -141,5 +141,13 @@ describe("api/articles", () => {
           });
         });
     });
+    test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
+      return request(app)
+        .get("/api/articles/100/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
   });
 });
