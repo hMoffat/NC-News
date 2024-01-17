@@ -8,9 +8,6 @@ exports.fetchArticleById = (article_id, next) => {
         return Promise.reject({ status: 404, message: "Not found" });
       }
       return rows[0];
-    })
-    .catch((err) => {
-      next(err);
     });
 };
 

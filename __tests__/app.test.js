@@ -23,35 +23,6 @@ describe("Bad path", () => {
           expect(body.message).toBe("Path does not exist");
         });
     });
-    test("None existant path on api/aricles/:artcle_id", () => {
-      return request(app)
-        .get("/api/aricles/10")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.message).toBe("Path does not exist");
-        });
-    });
-    test("None existant path on api/aricles/", () => {
-      return request(app)
-        .get("/api/aricles")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.message).toBe("Path does not exist");
-        });
-    });
-  });
-});
-
-describe("Bad request", () => {
-  describe("Status 400: Responds with 'Bad request' message, for:", () => {
-    test("Invalid id on GET api/articles/:article_id", () => {
-      return request(app)
-        .get("/api/articles/banana")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.message).toBe("Bad request");
-        });
-    });
   });
 });
 
@@ -90,19 +61,21 @@ describe("api/articles", () => {
   describe("GET api/articles/:article_id", () => {
     test("Status 200: responds with corresponding article object to requested id", () => {
       return request(app)
-        .get("/api/articles/4")
+        .get("/api/articles/7")
         .expect(200)
         .then(({ body }) => {
-          //check id
-          expect(body.article_id).toBe(4);
-          //rest
-          expect(body).toHaveProperty("author", expect.any(String));
-          expect(body).toHaveProperty("title", expect.any(String));
-          expect(body).toHaveProperty("body", expect.any(String));
-          expect(body).toHaveProperty("topic", expect.any(String));
-          expect(body).toHaveProperty("created_at", expect.any(String));
-          expect(body).toHaveProperty("votes", expect.any(Number));
-          expect(body).toHaveProperty("article_img_url", expect.any(String));
+          const article7 = {
+            article_id: 7,
+            title: "Z",
+            topic: "mitch",
+            author: "icellusedkars",
+            votes: 0,
+            body: "I was hungry.",
+            created_at: "2020-01-07T14:08:00.000Z",
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          };
+          expect(body).toMatchObject(article7);
         });
     });
     test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
@@ -111,6 +84,14 @@ describe("api/articles", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.message).toBe("Not found");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for invalid id", () => {
+      return request(app)
+        .get("/api/articles/banana")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
         });
     });
   });
