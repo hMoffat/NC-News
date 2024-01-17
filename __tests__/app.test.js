@@ -128,7 +128,6 @@ describe("api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const articles = body.comments;
-          console.log("TEST --->", articles);
           expect(articles.length).toBe(2);
           expect(articles).toBeSortedBy("created_at");
           articles.forEach((article) => {
@@ -165,6 +164,27 @@ describe("api/articles", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe("Bad request");
+        });
+    });
+  });
+  describe("POST /api/articles/:article_id/comments", () => {
+    test("Status 201: creates new comment and responds with the posted comment", () => {
+      return request(app)
+        .post("/api/articles/9/comments")
+        .send({
+          username: "rogersop",
+          body: "I love articles like this.",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body).toMatchObject({
+            body: "I love articles like this.",
+            votes: 0,
+            author: "rogersop",
+            article_id: 9,
+            comment_id: 19,
+          });
+          expect(body).toHaveProperty("created_at", expect.any(String));
         });
     });
   });

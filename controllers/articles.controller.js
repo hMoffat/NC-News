@@ -2,6 +2,7 @@ const {
   fetchArticleById,
   fetchArticles,
   fetchCommentsByArticleId,
+  addComment,
 } = require("../models/articles.model.js");
 const { checkArticleIdExists } = require("../utils/utils.js");
 
@@ -33,4 +34,12 @@ exports.getCommentsByArticleId = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
+exports.postComment = (req, res) => {
+  const { article_id } = req.params;
+  const { body } = req;
+  addComment(article_id, body).then((newComment) => {
+    res.status(201).send(newComment);
+  });
 };
