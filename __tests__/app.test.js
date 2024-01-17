@@ -149,5 +149,13 @@ describe("api/articles", () => {
           expect(body.message).toBe("Not found");
         });
     });
+    test("Status 400: Responds with 'Bad request' message, for invalid id", () => {
+      return request(app)
+        .get("/api/articles/banana/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
   });
 });
