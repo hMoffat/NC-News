@@ -36,10 +36,18 @@ exports.getCommentsByArticleId = (req, res, next) => {
     });
 };
 
-exports.postComment = (req, res) => {
+exports.postComment = (req, res, next) => {
   const { article_id } = req.params;
   const { body } = req;
-  addComment(article_id, body).then((newComment) => {
-    res.status(201).send(newComment);
-  });
+  const articleIdCheck = checkArticleIdExists(article_id);
+  const createComment = addComment(article_id, body);
+  Promise.all([createComment, articleIdCheck])
+    .then((results) => {
+      console.log(results[0]);
+      res.status(201).send(results[0]);
+    })
+    .catch((err) => {
+      console.log(err);
+      next(err);
+    });
 };

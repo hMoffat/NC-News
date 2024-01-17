@@ -187,5 +187,74 @@ describe("api/articles", () => {
           expect(body).toHaveProperty("created_at", expect.any(String));
         });
     });
+    test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
+      return request(app)
+        .post("/api/articles/100/comments")
+        .send({
+          username: "rogersop",
+          body: "I love articles like this.",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for invalid id", () => {
+      return request(app)
+        .post("/api/articles/banana/comments")
+        .send({
+          username: "rogersop",
+          body: "I love articles like this.",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for request missing required fields", () => {
+      return request(app)
+        .post("/api/articles/9/comments")
+        .send({})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for request missing username value", () => {
+      return request(app)
+        .post("/api/articles/9/comments")
+        .send({
+          username: "",
+          body: "I love articles like this.",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for request missing body values", () => {
+      return request(app)
+        .post("/api/articles/9/comments")
+        .send({
+          username: "rogersop",
+          body: "",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Missing comment body");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for invalid username.", () => {
+      return request(app)
+        .post("/api/articles/9/comments")
+        .send({
+          username: "ListeningLakes",
+          body: "I love articles like this.",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
   });
 });

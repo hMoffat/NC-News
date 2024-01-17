@@ -29,7 +29,7 @@ app.all("*", (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  const psqlCodes = ["22P02"];
+  const psqlCodes = ["22P02", "23502", "23503"];
   if (psqlCodes.includes(err.code)) {
     res.status(400).send({ message: "Bad request" });
   }
