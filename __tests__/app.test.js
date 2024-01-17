@@ -15,7 +15,7 @@ afterAll(() => {
 
 describe("Bad path", () => {
   describe("Status 404: responds with 'Path does not exist' message, for: ", () => {
-    test("None existant path on /api/topics", () => {
+    test("None existant path on /api/topcs", () => {
       return request(app)
         .get("/api/topcs")
         .expect(404)
@@ -23,7 +23,7 @@ describe("Bad path", () => {
           expect(body.message).toBe("Path does not exist");
         });
     });
-    test("None existant path on api/articles/:artcle_id", () => {
+    test("None existant path on api/aricles/:artcle_id", () => {
       return request(app)
         .get("/api/aricles/10")
         .expect(404)
@@ -31,7 +31,7 @@ describe("Bad path", () => {
           expect(body.message).toBe("Path does not exist");
         });
     });
-    test("None existant path on api/articles/", () => {
+    test("None existant path on api/aricles/", () => {
       return request(app)
         .get("/api/aricles")
         .expect(404)
@@ -122,7 +122,9 @@ describe("api/articles", () => {
         .then(({ body }) => {
           expect(body.length).toBe(13);
           expect(body).toBeSortedBy("created_at");
-          //descending date order
+          const article_id1 = body.find((article) => article.article_id === 1);
+          expect(article_id1).toHaveProperty("comment_count", "11");
+
           body.forEach((article) => {
             expect(article).toHaveProperty("author", expect.any(String));
             expect(article).toHaveProperty("title", expect.any(String));

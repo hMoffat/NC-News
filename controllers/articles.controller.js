@@ -15,9 +15,7 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res) => {
-  fetchArticles()
-    .then(({ rows }) => {
-      res.status(200).send(rows);
-    })
-    .catch((err) => {});
+  fetchArticles().then((rows) => {
+    res.status(200).send(rows);
+  });
 };

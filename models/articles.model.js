@@ -15,7 +15,15 @@ exports.fetchArticleById = (article_id, next) => {
 };
 
 exports.fetchArticles = () => {
-  return db.query(
-    "SELECT article_id, title, topic, author, created_at, votes, article_img_url FROM articles ORDER BY created_at"
-  );
+  return db
+    .query(
+      `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.votes, articles.article_img_url, articles.created_at, COUNT(comments.article_id) AS comment_count 
+      FROM articles
+      LEFT JOIN comments ON articles.article_id = comments.article_id
+      GROUP BY comments.article_id, articles.article_id, articles.*
+      ORDER BY articles.created_at;`
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
 };
