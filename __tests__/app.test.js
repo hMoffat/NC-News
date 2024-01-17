@@ -95,6 +95,28 @@ describe("api/articles", () => {
         });
     });
   });
+  describe("PATCH /api/articles/:article_id", () => {
+    test("Status 200: Updates given articles votes and responds with the updated article", () => {
+      return request(app)
+        .patch("/api/articles/4")
+        .send({ inc_votes: 3 })
+        .expect(200)
+        .then(({ body }) => {
+          const article = body[0];
+          expect(article).toMatchObject({
+            article_id: 4,
+            title: "Student SUES Mitch!",
+            topic: "mitch",
+            author: "rogersop",
+            body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
+            votes: 3,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          });
+          expect(article).toHaveProperty("created_at", expect.any(String));
+        });
+    });
+  });
   describe("GET api/articles", () => {
     test("Status 200: responds with an array of article objects", () => {
       return request(app)

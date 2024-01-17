@@ -3,6 +3,7 @@ const {
   fetchArticles,
   fetchCommentsByArticleId,
   addComment,
+  addArticleVotes,
 } = require("../models/articles.model.js");
 const { checkArticleIdExists } = require("../utils/utils.js");
 
@@ -43,11 +44,19 @@ exports.postComment = (req, res, next) => {
   const createComment = addComment(article_id, body);
   Promise.all([createComment, articleIdCheck])
     .then((results) => {
-      console.log(results[0]);
       res.status(201).send(results[0]);
     })
     .catch((err) => {
-      console.log(err);
       next(err);
     });
+};
+
+exports.updateArticleVotes = (req, res, next) => {
+  const { inc_votes } = req.body;
+  const { article_id } = req.params;
+  const articleIdCheck = checkArticleIdExists(article_id);
+  const increaseArticleVotes = addArticleVotes(article_id, inc_votes);
+  Promise.all([increaseArticleVotes, articleIdCheck]).then((results) => {
+    res.status(200).send(results[0]);
+  });
 };
