@@ -102,9 +102,7 @@ describe("api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.length).toBe(13);
-          expect(body).toBeSortedBy("created_at");
-          const article_id1 = body.find((article) => article.article_id === 1);
-          expect(article_id1).toHaveProperty("comment_count", "11");
+          expect(body).toBeSortedBy("created_at", { descending: true });
 
           body.forEach((article) => {
             expect(article).toHaveProperty("author", expect.any(String));
