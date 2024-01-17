@@ -15,7 +15,7 @@ afterAll(() => {
 
 describe("Bad path", () => {
   describe("Status 404: responds with 'Path does not exist' message, for: ", () => {
-    test("None existant path on /api/topics", () => {
+    test("None existant path on /api/topcs", () => {
       return request(app)
         .get("/api/topcs")
         .expect(404)
@@ -23,9 +23,17 @@ describe("Bad path", () => {
           expect(body.message).toBe("Path does not exist");
         });
     });
-    test("None existant path on api/articles/:artcle_id", () => {
+    test("None existant path on api/aricles/:artcle_id", () => {
       return request(app)
         .get("/api/aricles/10")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Path does not exist");
+        });
+    });
+    test("None existant path on api/aricles/", () => {
+      return request(app)
+        .get("/api/aricles")
         .expect(404)
         .then(({ body }) => {
           expect(body.message).toBe("Path does not exist");
@@ -106,6 +114,32 @@ describe("api/articles", () => {
         });
     });
   });
+  describe("GET api/articles", () => {
+    test("Status 200: responds with an array of article objects", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.length).toBe(13);
+          expect(body).toBeSortedBy("created_at");
+          const article_id1 = body.find((article) => article.article_id === 1);
+          expect(article_id1).toHaveProperty("comment_count", "11");
 
-  // remember to add description to endpoint json
+          body.forEach((article) => {
+            expect(article).toHaveProperty("author", expect.any(String));
+            expect(article).toHaveProperty("title", expect.any(String));
+            expect(article).toHaveProperty("article_id", expect.any(Number));
+            expect(article).toHaveProperty("topic", expect.any(String));
+            expect(article).toHaveProperty("created_at", expect.any(String));
+            expect(article).toHaveProperty("votes", expect.any(Number));
+            expect(article).toHaveProperty(
+              "article_img_url",
+              expect.any(String)
+            );
+
+            expect(article).not.toHaveProperty("body");
+          });
+        });
+    });
+  });
 });
