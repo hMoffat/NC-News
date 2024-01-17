@@ -26,6 +26,7 @@ app.all("*", (req, res) => {
 app.use((err, req, res, next) => {
   const psqlCodes = ["22P02"];
   if (psqlCodes.includes(err.code)) {
+    console.log("psql error -->", err);
     res.status(400).send({ message: "Bad request" });
   }
   if (err.message) {

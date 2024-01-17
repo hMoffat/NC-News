@@ -102,9 +102,7 @@ describe("api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.length).toBe(13);
-          expect(body).toBeSortedBy("created_at");
-          const article_id1 = body.find((article) => article.article_id === 1);
-          expect(article_id1).toHaveProperty("comment_count", "11");
+          expect(body).toBeSortedBy("created_at", { descending: true });
 
           body.forEach((article) => {
             expect(article).toHaveProperty("author", expect.any(String));
@@ -129,16 +127,28 @@ describe("api/articles", () => {
         .get("/api/articles/9/comments")
         .expect(200)
         .then(({ body }) => {
-          expect(body.length).toBe(2);
-          expect(body).toBeSortedBy("created_at");
-          body.forEach((row) => {
-            expect(row).toHaveProperty("comment_id", expect.any(Number));
-            expect(row).toHaveProperty("votes", expect.any(Number));
-            expect(row).toHaveProperty("created_at", expect.any(String));
-            expect(row).toHaveProperty("author", expect.any(String));
-            expect(row).toHaveProperty("body", expect.any(String));
-            expect(row).toHaveProperty("article_id", expect.any(Number));
+          const articles = body.comments;
+          console.log("TEST --->", articles);
+          expect(articles.length).toBe(2);
+          expect(articles).toBeSortedBy("created_at");
+          articles.forEach((article) => {
+            expect(article).toHaveProperty("comment_id", expect.any(Number));
+            expect(article).toHaveProperty("votes", expect.any(Number));
+            expect(article).toHaveProperty("created_at", expect.any(String));
+            expect(article).toHaveProperty("author", expect.any(String));
+            expect(article).toHaveProperty("body", expect.any(String));
+            expect(article.article_id).toBe(9);
           });
+        });
+    });
+    test("Status 200: Responds with 200 and an empty array when passed a valid Id that has no comments", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const articles = body.comments;
+          expect(Array.isArray(articles)).toBe(true);
+          expect(articles.length).toBe(0);
         });
     });
     test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {

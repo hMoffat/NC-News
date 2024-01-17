@@ -18,7 +18,7 @@ exports.fetchArticles = () => {
       FROM articles
       LEFT JOIN comments ON articles.article_id = comments.article_id
       GROUP BY comments.article_id, articles.article_id, articles.*
-      ORDER BY articles.created_at;`
+      ORDER BY articles.created_at DESC;`
     )
     .then(({ rows }) => {
       return rows;
@@ -32,9 +32,6 @@ exports.fetchCommentsByArticleId = (article_id) => {
       [article_id]
     )
     .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({ status: 404, message: "Not found" });
-      }
       return rows;
     });
 };
