@@ -128,7 +128,6 @@ describe("api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           const articles = body.comments;
-          console.log("TEST --->", articles);
           expect(articles.length).toBe(2);
           expect(articles).toBeSortedBy("created_at");
           articles.forEach((article) => {
@@ -162,6 +161,96 @@ describe("api/articles", () => {
     test("Status 400: Responds with 'Bad request' message, for invalid id", () => {
       return request(app)
         .get("/api/articles/banana/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+  });
+  describe("POST /api/articles/:article_id/comments", () => {
+    test("Status 201: creates new comment and responds with the posted comment", () => {
+      return request(app)
+        .post("/api/articles/9/comments")
+        .send({
+          username: "rogersop",
+          body: "I love articles like this.",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body).toMatchObject({
+            body: "I love articles like this.",
+            votes: 0,
+            author: "rogersop",
+            article_id: 9,
+            comment_id: 19,
+          });
+          expect(body).toHaveProperty("created_at", expect.any(String));
+        });
+    });
+    test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
+      return request(app)
+        .post("/api/articles/100/comments")
+        .send({
+          username: "rogersop",
+          body: "I love articles like this.",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for invalid id", () => {
+      return request(app)
+        .post("/api/articles/banana/comments")
+        .send({
+          username: "rogersop",
+          body: "I love articles like this.",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for request missing required fields", () => {
+      return request(app)
+        .post("/api/articles/9/comments")
+        .send({})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for request missing username value", () => {
+      return request(app)
+        .post("/api/articles/9/comments")
+        .send({
+          username: "",
+          body: "I love articles like this.",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for request missing body values", () => {
+      return request(app)
+        .post("/api/articles/9/comments")
+        .send({
+          username: "rogersop",
+          body: "",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Missing comment body");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for invalid username.", () => {
+      return request(app)
+        .post("/api/articles/9/comments")
+        .send({
+          username: "ListeningLakes",
+          body: "I love articles like this.",
+        })
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe("Bad request");

@@ -2,6 +2,7 @@ const {
   fetchArticleById,
   fetchArticles,
   fetchCommentsByArticleId,
+  addComment,
 } = require("../models/articles.model.js");
 const { checkArticleIdExists } = require("../utils/utils.js");
 
@@ -31,6 +32,22 @@ exports.getCommentsByArticleId = (req, res, next) => {
       res.status(200).send({ comments: results[0] });
     })
     .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postComment = (req, res, next) => {
+  const { article_id } = req.params;
+  const { body } = req;
+  const articleIdCheck = checkArticleIdExists(article_id);
+  const createComment = addComment(article_id, body);
+  Promise.all([createComment, articleIdCheck])
+    .then((results) => {
+      console.log(results[0]);
+      res.status(201).send(results[0]);
+    })
+    .catch((err) => {
+      console.log(err);
       next(err);
     });
 };

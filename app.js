@@ -6,7 +6,10 @@ const {
   getArticleById,
   getArticles,
   getCommentsByArticleId,
+  postComment,
 } = require("./controllers/articles.controller");
+
+app.use(express.json());
 
 app.get("/api", getEndpoints);
 
@@ -18,15 +21,16 @@ app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
+app.post("/api/articles/:article_id/comments", postComment);
+
 //end of http requests
 app.all("*", (req, res) => {
   res.status(404).send({ message: "Path does not exist" });
 });
 
 app.use((err, req, res, next) => {
-  const psqlCodes = ["22P02"];
+  const psqlCodes = ["22P02", "23502", "23503"];
   if (psqlCodes.includes(err.code)) {
-    console.log("psql error -->", err);
     res.status(400).send({ message: "Bad request" });
   }
   if (err.message) {
