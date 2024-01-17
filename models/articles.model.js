@@ -24,3 +24,13 @@ exports.fetchArticles = () => {
       return rows;
     });
 };
+
+exports.fetchCommentsByArticleId = (article_id) => {
+  return db
+    .query(
+      `SELECT * FROM comments WHERE article_id= 9 ORDER BY created_at ASC;`
+    )
+    .then(({ rows }) => {
+      return rows;
+    });
+};
