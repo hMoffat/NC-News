@@ -123,4 +123,39 @@ describe("api/articles", () => {
         });
     });
   });
+  describe("GET /api/articles/:article_id/comments", () => {
+    test("Status 200: Responds with an array of comment objects for corresponding article id", () => {
+      return request(app)
+        .get("/api/articles/9/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.length).toBe(2);
+          expect(body).toBeSortedBy("created_at");
+          body.forEach((row) => {
+            expect(row).toHaveProperty("comment_id", expect.any(Number));
+            expect(row).toHaveProperty("votes", expect.any(Number));
+            expect(row).toHaveProperty("created_at", expect.any(String));
+            expect(row).toHaveProperty("author", expect.any(String));
+            expect(row).toHaveProperty("body", expect.any(String));
+            expect(row).toHaveProperty("article_id", expect.any(Number));
+          });
+        });
+    });
+    test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
+      return request(app)
+        .get("/api/articles/100/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for invalid id", () => {
+      return request(app)
+        .get("/api/articles/banana/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+  });
 });
