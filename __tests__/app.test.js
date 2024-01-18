@@ -181,6 +181,35 @@ describe("/api/articles", () => {
           });
         });
     });
+    test("When given a topic query, filters the response", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles.length).toBe(12);
+          articles.forEach((article) => {
+            expect(article.topic).toBe("mitch");
+          });
+        });
+    });
+    test("When given a valid topic query with no articles, responds with an empty array", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles.length).toBe(0);
+        });
+    });
+    test("Status 404: Responds with 'Topic doesn't exist' for valid but noneexistant topic", () => {
+      return request(app)
+        .get("/api/articles?topic=lakes")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Topic doesn't exist");
+        });
+    });
   });
   describe("GET /api/articles/:article_id/comments", () => {
     test("Status 200: Responds with an array of comment objects for corresponding article id", () => {
