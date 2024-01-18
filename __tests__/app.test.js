@@ -316,3 +316,44 @@ describe("api/articles", () => {
     });
   });
 });
+
+describe("api/comments/:comments_id", () => {
+  test("Status 204: removes the comment with the comment id and responds with 204 (and no content", () => {
+    return db
+      .query("SELECT * FROM comments WHERE comment_id = 5;")
+      .then(({ rows }) => {
+        expect(rows[0].comment_id).toBe(5);
+      })
+      .then(() => {
+        return request(app)
+          .delete("/api/comments/5")
+          .expect(204)
+          .then(({ body }) => {
+            expect(body).toEqual({});
+          })
+          .then(() => {
+            return db
+              .query("SELECT * FROM comments WHERE comment_id = 5;")
+              .then(({ rows }) => {
+                expect(rows.length === 0);
+              });
+          });
+      });
+  });
+  test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
+    return request(app)
+      .delete("/api/comments/100")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Not found");
+      });
+  });
+  test("Status 404: Responds with 'Bad request' message, for invalid.", () => {
+    return request(app)
+      .delete("/api/comments/banana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad request");
+      });
+  });
+});

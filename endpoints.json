@@ -108,5 +108,11 @@
       "created_at": "2020-05-12T13:07:00.000Z",
       "comment_id": 19
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "removes the comment with the given comment id",
+    "queries": [],
+    "request format": {},
+    "example response": {}
   }
 }
