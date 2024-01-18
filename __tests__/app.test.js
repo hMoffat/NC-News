@@ -33,7 +33,8 @@ describe("/api", () => {
         .get("/api")
         .expect(200)
         .then(({ body }) => {
-          expect(body).toEqual(endpointsJSON);
+          const { endpoints } = body;
+          expect(endpoints).toEqual(endpointsJSON);
         });
     });
   });
@@ -64,6 +65,7 @@ describe("api/articles", () => {
         .get("/api/articles/7")
         .expect(200)
         .then(({ body }) => {
+          const { article } = body;
           const article7 = {
             article_id: 7,
             title: "Z",
@@ -75,7 +77,7 @@ describe("api/articles", () => {
             article_img_url:
               "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           };
-          expect(body).toMatchObject(article7);
+          expect(article).toMatchObject(article7);
         });
     });
     test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
@@ -102,7 +104,7 @@ describe("api/articles", () => {
         .send({ inc_votes: -80 })
         .expect(200)
         .then(({ body }) => {
-          const article = body[0];
+          const article = body.updatedArticle;
           expect(article).toMatchObject({
             article_id: 4,
             title: "Student SUES Mitch!",
@@ -159,10 +161,11 @@ describe("api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-          expect(body.length).toBe(13);
-          expect(body).toBeSortedBy("created_at", { descending: true });
+          const { articles } = body;
+          expect(articles.length).toBe(13);
+          expect(articles).toBeSortedBy("created_at", { descending: true });
 
-          body.forEach((article) => {
+          articles.forEach((article) => {
             expect(article).toHaveProperty("author", expect.any(String));
             expect(article).toHaveProperty("title", expect.any(String));
             expect(article).toHaveProperty("article_id", expect.any(Number));
@@ -235,14 +238,15 @@ describe("api/articles", () => {
         })
         .expect(201)
         .then(({ body }) => {
-          expect(body).toMatchObject({
+          const { postedComment } = body;
+          expect(postedComment).toMatchObject({
             body: "I love articles like this.",
             votes: 0,
             author: "rogersop",
             article_id: 9,
             comment_id: 19,
+            created_at: expect.any(String),
           });
-          expect(body).toHaveProperty("created_at", expect.any(String));
         });
     });
     test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
