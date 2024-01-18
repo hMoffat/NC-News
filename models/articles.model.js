@@ -65,6 +65,6 @@ exports.addArticleVotes = (article_id, votes) => {
       [votes, article_id]
     )
     .then(({ rows }) => {
-      return rows;
+      return rows[0];
     });
 };

@@ -11,7 +11,7 @@ exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
   return fetchArticleById(article_id, next)
     .then((article) => {
-      res.status(200).send(article);
+      res.status(200).send({ article });
     })
     .catch((err) => {
       next(err);
@@ -19,8 +19,8 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res) => {
-  fetchArticles().then((rows) => {
-    res.status(200).send(rows);
+  fetchArticles().then((articles) => {
+    res.status(200).send({ articles });
   });
 };
 
@@ -30,7 +30,8 @@ exports.getCommentsByArticleId = (req, res, next) => {
   const fetchComments = fetchCommentsByArticleId(article_id, next);
   Promise.all([fetchComments, articleIdCheck])
     .then((results) => {
-      res.status(200).send({ comments: results[0] });
+      const comments = results[0];
+      res.status(200).send({ comments });
     })
     .catch((err) => {
       next(err);
@@ -44,7 +45,8 @@ exports.postComment = (req, res, next) => {
   const createComment = addComment(article_id, body);
   Promise.all([createComment, articleIdCheck])
     .then((results) => {
-      res.status(201).send(results[0]);
+      const postedComment = results[0];
+      res.status(201).send({ postedComment });
     })
     .catch((err) => {
       next(err);
@@ -58,7 +60,8 @@ exports.updateArticleVotes = (req, res, next) => {
   const increaseArticleVotes = addArticleVotes(article_id, inc_votes);
   Promise.all([increaseArticleVotes, articleIdCheck])
     .then((results) => {
-      res.status(200).send(results[0]);
+      const updatedArticle = results[0];
+      res.status(200).send({ updatedArticle });
     })
     .catch((err) => {
       next(err);
