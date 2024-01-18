@@ -5,7 +5,8 @@ const {
   addComment,
   addArticleVotes,
 } = require("../models/articles.model.js");
-const { checkArticleIdExists } = require("../utils/utils.js");
+const { fetchTopics } = require("../models/topics.model.js");
+const { checkArticleIdExists, checkTopicExists } = require("../utils/utils.js");
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
@@ -18,10 +19,25 @@ exports.getArticleById = (req, res, next) => {
     });
 };
 
-exports.getArticles = (req, res) => {
-  fetchArticles().then((articles) => {
-    res.status(200).send({ articles });
-  });
+exports.getArticles = (req, res, next) => {
+  const { topic } = req.query;
+
+  const fetchArticlesQuery = fetchArticles(topic);
+  const queries = [fetchArticlesQuery];
+
+  if (topic) {
+    const topicExistsQuery = checkTopicExists(topic);
+    queries.push(topicExistsQuery);
+  }
+
+  Promise.all(queries)
+    .then((results) => {
+      const articles = results[0];
+      res.status(200).send({ articles });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {
