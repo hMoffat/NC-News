@@ -56,7 +56,11 @@ exports.updateArticleVotes = (req, res, next) => {
   const { article_id } = req.params;
   const articleIdCheck = checkArticleIdExists(article_id);
   const increaseArticleVotes = addArticleVotes(article_id, inc_votes);
-  Promise.all([increaseArticleVotes, articleIdCheck]).then((results) => {
-    res.status(200).send(results[0]);
-  });
+  Promise.all([increaseArticleVotes, articleIdCheck])
+    .then((results) => {
+      res.status(200).send(results[0]);
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

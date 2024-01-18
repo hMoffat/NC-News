@@ -99,7 +99,7 @@ describe("api/articles", () => {
     test("Status 200: Updates given articles votes and responds with the updated article", () => {
       return request(app)
         .patch("/api/articles/4")
-        .send({ inc_votes: 3 })
+        .send({ inc_votes: -80 })
         .expect(200)
         .then(({ body }) => {
           const article = body[0];
@@ -109,11 +109,47 @@ describe("api/articles", () => {
             topic: "mitch",
             author: "rogersop",
             body: "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
-            votes: 3,
+            votes: -80,
             article_img_url:
               "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           });
           expect(article).toHaveProperty("created_at", expect.any(String));
+        });
+    });
+    test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
+      return request(app)
+        .patch("/api/articles/100")
+        .send({ inc_votes: -80 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for invalid id", () => {
+      return request(app)
+        .patch("/api/articles/banana")
+        .send({ inc_votes: -80 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for missing inc_votes property", () => {
+      return request(app)
+        .patch("/api/articles/9")
+        .send({})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for invalid inc_votes value", () => {
+      return request(app)
+        .patch("/api/articles/9")
+        .send({ inc_votes: "banana" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
         });
     });
   });
