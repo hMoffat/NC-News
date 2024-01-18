@@ -44,22 +44,24 @@
     "description": "serves an an article object matching the id requested",
     "queries": [],
     "example response": {
-      "article_id": 4,
-      "title": "Student SUES Mitch!",
-      "topic": "mitch",
-      "author": "rogersop",
-      "body": "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
-      "created_at": "2020-05-06T01:14:00.000Z",
-      "votes": 0,
-      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      "article": {
+        "article_id": 4,
+        "title": "Student SUES Mitch!",
+        "topic": "mitch",
+        "author": "rogersop",
+        "body": "We all love Mitch and his wonderful, unique typing style. However, the volume of his typing has ALLEGEDLY burst another students eardrums, and they are now suing for damages",
+        "created_at": "2020-05-06T01:14:00.000Z",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
     }
   },
   "PATCH /api/articles/:article_id": {
     "description": "updates votes for a given article",
     "queries": [],
     "request format": { "inc_votes": 3 },
-    "example response": [
-      {
+    "example response": {
+      "updatedArticle": {
         "article_id": 4,
         "title": "Student SUES Mitch!",
         "topic": "mitch",
@@ -69,29 +71,31 @@
         "votes": 3,
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
       }
-    ]
+    }
   },
   "GET api/articles/:article_id/comments": {
     "description": "serves an array of comment objects for given article_id",
     "queries": [],
-    "example response": [
-      {
-        "body": "The owls are not what they seem.",
-        "votes": 20,
-        "author": "icellusedkars",
-        "article_id": 9,
-        "created_at": "2020-03-14T17:02:00.000Z",
-        "comment_id": 17
-      },
-      {
-        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-        "votes": 16,
-        "author": "butter_bridge",
-        "article_id": 9,
-        "created_at": "2020-04-06T13:17:00.000Z",
-        "comment_id": 1
-      }
-    ]
+    "example response": {
+      "comments": [
+        {
+          "body": "The owls are not what they seem.",
+          "votes": 20,
+          "author": "icellusedkars",
+          "article_id": 9,
+          "created_at": "2020-03-14T17:02:00.000Z",
+          "comment_id": 17
+        },
+        {
+          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          "votes": 16,
+          "author": "butter_bridge",
+          "article_id": 9,
+          "created_at": "2020-04-06T13:17:00.000Z",
+          "comment_id": 1
+        }
+      ]
+    }
   },
   "POST api/articles/:article_id/comments": {
     "description": "Adds a comment for a given article",
@@ -101,12 +105,14 @@
       "body": "I love articles like this."
     },
     "example response": {
-      "body": "I love articles like this.",
-      "votes": 0,
-      "author": "rogersop",
-      "article_id": 9,
-      "created_at": "2020-05-12T13:07:00.000Z",
-      "comment_id": 19
+      "postedComment": {
+        "body": "I love articles like this.",
+        "votes": 0,
+        "author": "rogersop",
+        "article_id": 9,
+        "created_at": "2020-05-12T13:07:00.000Z",
+        "comment_id": 19
+      }
     }
   },
   "DELETE /api/comments/:comment_id": {
@@ -114,5 +120,19 @@
     "queries": [],
     "request format": {},
     "example response": {}
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "request format": {},
+    "example response": {
+      "users": [
+        {
+          "username": "rogersop",
+          "name": "paul",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+        }
+      ]
+    }
   }
 }

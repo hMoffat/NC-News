@@ -17,7 +17,7 @@ describe("Bad path", () => {
   describe("Status 404: responds with 'Path does not exist' message, for: ", () => {
     test("None existant path on /api/topcs", () => {
       return request(app)
-        .get("/api/topcs")
+        .get("/api/usrs")
         .expect(404)
         .then(({ body }) => {
           expect(body.message).toBe("Path does not exist");
@@ -58,7 +58,7 @@ describe("/api/topics", () => {
   });
 });
 
-describe("api/articles", () => {
+describe("/api/articles", () => {
   describe("GET api/articles/:article_id", () => {
     test("Status 200: responds with corresponding article object to requested id", () => {
       return request(app)
@@ -188,16 +188,16 @@ describe("api/articles", () => {
         .get("/api/articles/9/comments")
         .expect(200)
         .then(({ body }) => {
-          const articles = body.comments;
-          expect(articles.length).toBe(2);
-          expect(articles).toBeSortedBy("created_at");
-          articles.forEach((article) => {
-            expect(article).toHaveProperty("comment_id", expect.any(Number));
-            expect(article).toHaveProperty("votes", expect.any(Number));
-            expect(article).toHaveProperty("created_at", expect.any(String));
-            expect(article).toHaveProperty("author", expect.any(String));
-            expect(article).toHaveProperty("body", expect.any(String));
-            expect(article.article_id).toBe(9);
+          const { comments } = body;
+          expect(comments.length).toBe(2);
+          expect(comments).toBeSortedBy("created_at");
+          comments.forEach((comment) => {
+            expect(comment).toHaveProperty("comment_id", expect.any(Number));
+            expect(comment).toHaveProperty("votes", expect.any(Number));
+            expect(comment).toHaveProperty("created_at", expect.any(String));
+            expect(comment).toHaveProperty("author", expect.any(String));
+            expect(comment).toHaveProperty("body", expect.any(String));
+            expect(comment.article_id).toBe(9);
           });
         });
     });
@@ -321,43 +321,64 @@ describe("api/articles", () => {
   });
 });
 
-describe("api/comments/:comments_id", () => {
-  test("Status 204: removes the comment with the comment id and responds with 204 (and no content", () => {
-    return db
-      .query("SELECT * FROM comments WHERE comment_id = 5;")
-      .then(({ rows }) => {
-        expect(rows[0].comment_id).toBe(5);
-      })
-      .then(() => {
-        return request(app)
-          .delete("/api/comments/5")
-          .expect(204)
-          .then(({ body }) => {
-            expect(body).toEqual({});
-          })
-          .then(() => {
-            return db
-              .query("SELECT * FROM comments WHERE comment_id = 5;")
-              .then(({ rows }) => {
-                expect(rows.length === 0);
-              });
+describe("/api/comments/:comments_id", () => {
+  describe("DELETE api/comments/:comments_id", () => {
+    test("Status 204: removes the comment with the comment id and responds with 204 (and no content", () => {
+      return db
+        .query("SELECT * FROM comments WHERE comment_id = 5;")
+        .then(({ rows }) => {
+          expect(rows[0].comment_id).toBe(5);
+        })
+        .then(() => {
+          return request(app)
+            .delete("/api/comments/5")
+            .expect(204)
+            .then(({ body }) => {
+              expect(body).toEqual({});
+            })
+            .then(() => {
+              return db
+                .query("SELECT * FROM comments WHERE comment_id = 5;")
+                .then(({ rows }) => {
+                  expect(rows.length === 0);
+                });
+            });
+        });
+    });
+    test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
+      return request(app)
+        .delete("/api/comments/100")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
+    test("Status 404: Responds with 'Bad request' message, for invalid.", () => {
+      return request(app)
+        .delete("/api/comments/banana")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+  });
+});
+
+describe("/api/users", () => {
+  describe("GET /api/users", () => {
+    test("Status 200: Responsds with an array of article objects", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          const { users } = body;
+          expect(users.length).toBe(4);
+          users.forEach((user) => {
+            expect(user).toHaveProperty("username", expect.any(String));
+            expect(user).toHaveProperty("name", expect.any(String));
+            expect(user).toHaveProperty("avatar_url", expect.any(String));
           });
-      });
-  });
-  test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
-    return request(app)
-      .delete("/api/comments/100")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.message).toBe("Not found");
-      });
-  });
-  test("Status 404: Responds with 'Bad request' message, for invalid.", () => {
-    return request(app)
-      .delete("/api/comments/banana")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.message).toBe("Bad request");
-      });
+        });
+    });
   });
 });
