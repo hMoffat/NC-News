@@ -59,7 +59,7 @@ describe("/api/topics", () => {
 });
 
 describe("/api/articles", () => {
-  describe("GET api/articles/:article_id", () => {
+  describe("GET /api/articles/:article_id", () => {
     test("Status 200: responds with corresponding article object to requested id", () => {
       return request(app)
         .get("/api/articles/7")
@@ -78,6 +78,26 @@ describe("/api/articles", () => {
               "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           };
           expect(article).toMatchObject(article7);
+        });
+    });
+    test("Status 200: responds with corresponding article object to requested id which includes a comment_count", () => {
+      return request(app)
+        .get("/api/articles/5")
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body;
+          const article5 = {
+            article_id: 5,
+            title: "UNCOVERED: catspiracy to bring down democracy",
+            topic: "cats",
+            author: "rogersop",
+            votes: 0,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            created_at: "2020-08-03T13:14:00.000Z",
+            comment_count: "2",
+          };
+          expect(article).toMatchObject(article5);
         });
     });
     test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
