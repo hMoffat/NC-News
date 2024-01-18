@@ -10,6 +10,7 @@ const {
   updateArticleVotes,
 } = require("./controllers/articles.controller");
 const { deleteCommentById } = require("./controllers/comments.controller");
+const { getUsers } = require("./controllers/users.controller");
 
 app.use(express.json());
 
@@ -28,6 +29,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postComment);
 
 app.delete("/api/comments/:comment_id", deleteCommentById);
+
+app.get("/api/users", getUsers);
 
 //end of http requests
 app.all("*", (req, res) => {
