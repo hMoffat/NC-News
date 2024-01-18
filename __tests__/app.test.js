@@ -193,6 +193,15 @@ describe("/api/articles", () => {
           });
         });
     });
+    test("When given a valid topic query with no articles, responds with an empty array", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles.length).toBe(0);
+        });
+    });
     test("Status 404: Responds with 'Topic doesn't exist' for valid but noneexistant topic", () => {
       return request(app)
         .get("/api/articles?topic=lakes")
