@@ -20,9 +20,9 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { topic } = req.query;
+  const { topic, sort_by, order } = req.query;
 
-  const fetchArticlesQuery = fetchArticles(topic);
+  const fetchArticlesQuery = fetchArticles(topic, sort_by, order);
   const queries = [fetchArticlesQuery];
 
   if (topic) {
