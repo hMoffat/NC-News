@@ -15,3 +15,15 @@ exports.removeComment = (comment_id) => {
       }
     });
 };
+
+exports.addCommentVotes = (comment_id, votes) => {
+  console.log(comment_id, votes);
+  return db
+    .query(
+      "UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *",
+      [votes, comment_id]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};

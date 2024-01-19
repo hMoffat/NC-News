@@ -298,9 +298,9 @@ describe("/api/articles", () => {
         .get("/api/articles/2/comments")
         .expect(200)
         .then(({ body }) => {
-          const articles = body.comments;
-          expect(Array.isArray(articles)).toBe(true);
-          expect(articles.length).toBe(0);
+          const { comments } = body;
+          expect(Array.isArray(comments)).toBe(true);
+          expect(comments.length).toBe(0);
         });
     });
     test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
@@ -448,6 +448,62 @@ describe("/api/comments/:comments_id", () => {
     test("Status 404: Responds with 'Bad request' message, for invalid.", () => {
       return request(app)
         .delete("/api/comments/banana")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+  });
+  describe("PATCH /api/comments/:comment_id", () => {
+    test("Status 200: Updates given comment's votes and responds with the updated comment", () => {
+      return request(app)
+        .patch("/api/comments/17")
+        .send({ inc_votes: 40 })
+        .expect(200)
+        .then(({ body }) => {
+          const { updatedComment } = body;
+          const comment17 = {
+            body: "The owls are not what they seem.",
+            votes: 60,
+            author: "icellusedkars",
+            article_id: 9,
+            created_at: "2020-03-14T17:02:00.000Z",
+            comment_id: 17,
+          };
+          expect(updatedComment).toMatchObject(comment17);
+        });
+    });
+    test("Status 404: Responds with 'Not found' message, for valid but non-existant id.", () => {
+      return request(app)
+        .patch("/api/comments/100")
+        .send({ inc_votes: 40 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for invalid id", () => {
+      return request(app)
+        .patch("/api/comments/banana")
+        .send({ inc_votes: 40 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for missing inc_votes property", () => {
+      return request(app)
+        .patch("/api/comments/17")
+        .send({})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Bad request");
+        });
+    });
+    test("Status 400: Responds with 'Bad request' message, for invalid inc_votes value", () => {
+      return request(app)
+        .patch("/api/comments/17")
+        .send({ inc_votes: "banana" })
         .expect(400)
         .then(({ body }) => {
           expect(body.message).toBe("Bad request");
