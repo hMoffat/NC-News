@@ -473,4 +473,29 @@ describe("/api/users", () => {
         });
     });
   });
+  describe("GET /api/users/:username", () => {
+    test("Status 200: Responds with corresponding user object for the username", () => {
+      return request(app)
+        .get("/api/users/rogersop")
+        .expect(200)
+        .then(({ body }) => {
+          const { user } = body;
+          const rogersopUser = {
+            username: "rogersop",
+            name: "paul",
+            avatar_url:
+              "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+          };
+          expect(user).toMatchObject(rogersopUser);
+        });
+    });
+    test("Status 404: Responds with 'Not found' message, for valid but non-existant username", () => {
+      return request(app)
+        .get("/api/users/banana")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
+  });
 });
