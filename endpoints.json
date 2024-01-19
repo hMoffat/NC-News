@@ -134,5 +134,16 @@
         }
       ]
     }
+  },
+  "GET /api/users/:username": {
+    "description": "serves an a user object matching the id requested",
+    "queries": [],
+    "example response": {
+      "user": {
+        "username": "rogersop",
+        "name": "paul",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+      }
+    }
   }
 }
