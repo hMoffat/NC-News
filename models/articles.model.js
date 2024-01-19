@@ -18,8 +18,29 @@ exports.fetchArticleById = (article_id, next) => {
     });
 };
 
-exports.fetchArticles = (topic) => {
+exports.fetchArticles = (topic, sort_by = "created_at", order = "desc") => {
   const queryValues = [];
+  const columns = [
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "comment_count",
+  ];
+
+  if (!columns.includes(sort_by)) {
+    return Promise.reject({
+      status: 400,
+      message: `Cannot sort by ${sort_by}`,
+    });
+  }
+
+  if (!["asc", "desc"].includes(order)) {
+    return Promise.reject({ status: 400, message: `Cannot order by ${order}` });
+  }
+
   let sqlQuery = `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.votes, articles.article_img_url, articles.created_at, COUNT(comments.article_id) AS comment_count 
   FROM articles
   LEFT JOIN comments ON articles.article_id = comments.article_id`;
@@ -30,7 +51,7 @@ exports.fetchArticles = (topic) => {
   }
 
   sqlQuery += ` GROUP BY comments.article_id, articles.article_id, articles.*
-      ORDER BY articles.created_at DESC;`;
+      ORDER BY articles.${sort_by} ${order};`;
 
   return db.query(sqlQuery, queryValues).then(({ rows }) => {
     return rows;

@@ -80,7 +80,7 @@ describe("/api/articles", () => {
           expect(article).toMatchObject(article7);
         });
     });
-    test("Status 200: responds with corresponding article object to requested id which includes a comment_count", () => {
+    test("Response includes a comment_count", () => {
       return request(app)
         .get("/api/articles/5")
         .expect(200)
@@ -222,12 +222,55 @@ describe("/api/articles", () => {
           expect(articles.length).toBe(0);
         });
     });
-    test("Status 404: Responds with 'Topic doesn't exist' for valid but noneexistant topic", () => {
+    test("Status 404: Responds with 'Topic doesn't exist' for valid but non-existent topic", () => {
       return request(app)
         .get("/api/articles?topic=lakes")
         .expect(404)
         .then(({ body }) => {
           expect(body.message).toBe("Topic doesn't exist");
+        });
+    });
+    test("When given a valid sort_by query, responds with the array appropriately sorted", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("author", { descending: true });
+        });
+    });
+    test("Status 400: Responds with 'Cannot sort by requested-sort' for non-existent column", () => {
+      return request(app)
+        .get("/api/articles?sort_by=not_a_column")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Cannot sort by not_a_column");
+        });
+    });
+    test("When given a valid order query, responds with array appropriately ordered", () => {
+      return request(app)
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("created_at");
+        });
+    });
+    test("Status 400: Responds with 'Cannot order by requested_order' when passed invalid order query", () => {
+      return request(app)
+        .get("/api/articles?order=not_an_order")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.message).toBe("Cannot order by not_an_order");
+        });
+    });
+    test("When given valid order_by and sort queries, responds with array appropriately ordered and sorted", () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes&order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("votes");
         });
     });
   });
