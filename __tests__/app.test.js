@@ -264,6 +264,15 @@ describe("/api/articles", () => {
           expect(body.message).toBe("Cannot order by not_an_order");
         });
     });
+    test("When given valid order_by and sort queries, responds with array appropriately ordered and sorted", () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes&order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("votes");
+        });
+    });
   });
   describe("GET /api/articles/:article_id/comments", () => {
     test("Status 200: Responds with an array of comment objects for corresponding article id", () => {
