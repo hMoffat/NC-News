@@ -1,4 +1,6 @@
 const db = require("../db/connection");
+const img =
+  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700";
 
 exports.fetchArticleById = (article_id, next) => {
   return db
@@ -50,8 +52,13 @@ exports.fetchArticles = (topic, sort_by = "created_at", order = "desc") => {
     sqlQuery += ` WHERE topic = $1`;
   }
 
-  sqlQuery += ` GROUP BY comments.article_id, articles.article_id, articles.*
-      ORDER BY articles.${sort_by} ${order};`;
+  if (sort_by === "comment_count") {
+    sqlQuery += ` GROUP BY comments.article_id, articles.article_id, articles.*
+    ORDER BY ${sort_by} ${order};`;
+  } else {
+    sqlQuery += ` GROUP BY comments.article_id, articles.article_id, articles.*
+    ORDER BY articles.${sort_by} ${order};`;
+  }
 
   return db.query(sqlQuery, queryValues).then(({ rows }) => {
     return rows;
@@ -99,5 +106,22 @@ exports.addArticleVotes = (article_id, votes) => {
     )
     .then(({ rows }) => {
       return rows[0];
+    });
+};
+
+exports.createArticle = (author, title, body, topic, article_img_url) => {
+  return db
+    .query(
+      `INSERT INTO articles
+      (author, title, body, topic, article_img_url)
+      VALUES
+      ($1, $2, $3, $4, $5)
+      RETURNING *
+      `,
+      [author, title, body, topic, article_img_url]
+    )
+    .then(({ rows }) => {
+      const { article_id } = rows[0];
+      return this.fetchArticleById(article_id);
     });
 };
