@@ -4,6 +4,7 @@ const {
   fetchCommentsByArticleId,
   addComment,
   addArticleVotes,
+  createArticle,
 } = require("../models/articles.model.js");
 const { fetchTopics } = require("../models/topics.model.js");
 const { checkArticleIdExists, checkTopicExists } = require("../utils/utils.js");
@@ -78,6 +79,18 @@ exports.updateArticleVotes = (req, res, next) => {
     .then((results) => {
       const updatedArticle = results[0];
       res.status(200).send({ updatedArticle });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postArticle = (req, res, next) => {
+  const { author, title, body, topic, article_img_url } = req.body;
+
+  createArticle(author, title, body, topic, article_img_url)
+    .then((postedArticle) => {
+      res.status(201).send({ postedArticle });
     })
     .catch((err) => {
       next(err);
