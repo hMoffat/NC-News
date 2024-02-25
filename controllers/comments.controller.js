@@ -19,7 +19,6 @@ exports.patchCommentVotes = (req, res, next) => {
   const commentIdCheck = checkCommentIdExists(comment_id);
   Promise.all([addCommentVotesQuery, commentIdCheck])
     .then((results) => {
-      console.log(results[0]);
       const updatedComment = results[0];
       res.status(200).send({ updatedComment });
     })
