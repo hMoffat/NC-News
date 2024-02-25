@@ -239,16 +239,6 @@ describe("/api/articles", () => {
           expect(articles).toBeSortedBy("author", { descending: true });
         });
     });
-    // test.only("When given a comment_count sort_by query, responds with the array appropriately sorted", () => {
-    //   return request(app)
-    //     .get("/api/articles?sort_by=comment_count")
-    //     .expect(200)
-    //     .then(({ body }) => {
-    //       const { articles } = body;
-    //       console.log(articles);
-    //       expect(articles).toBeSortedBy("comment_count", { descending: true });
-    //     });
-    // });
     test("Status 400: Responds with 'Cannot sort by requested-sort' for non-existent column", () => {
       return request(app)
         .get("/api/articles?sort_by=not_a_column")
@@ -450,24 +440,7 @@ describe("/api/articles", () => {
           });
         });
     });
-    // test("Adds a default image url if none provided", () => {
-    //   return request(app)
-    //     .post("/api/articles/9/comments")
-    //     .send({
-    //       title: "Cats are the best",
-    //       topic: "dogs",
-    //       author: "rogersop",
-    //       body: "Better than all the rest - you'll never catch them.",
-    //     })
-    //     .expect(201)
-    //     .then(({ body }) => {
-    //       const { postedArticle } = body;
-    //       console.log(postedArticle);
-    //       expect(postedArticle.article_img_url).toBe(
-    //         "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-    //       );
-    //     });
-    // });
+
     test("Status 400: Responds with 'Bad request' message, for request missing required fields", () => {
       return request(app)
         .post("/api/articles")
@@ -634,6 +607,26 @@ describe("/api/users", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.message).toBe("Not found");
+        });
+    });
+  });
+  describe("GET /api/users/:username/comments", () => {
+    test("Status 200: Responds with array of corresponding comment objects for the username", () => {
+      return request(app)
+        .get("/api/users/icellusedkars/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { userComments } = body;
+          expect(userComments.length).toBe(13);
+          expect(userComments).toBeSortedBy("created_at");
+          userComments.forEach((comment) => {
+            expect(comment.author).toBe("icellusedkars");
+            expect(comment).toHaveProperty("comment_id", expect.any(Number));
+            expect(comment).toHaveProperty("votes", expect.any(Number));
+            expect(comment).toHaveProperty("created_at", expect.any(String));
+            expect(comment).toHaveProperty("article_id", expect.any(Number));
+            expect(comment).toHaveProperty("body", expect.any(String));
+          });
         });
     });
   });

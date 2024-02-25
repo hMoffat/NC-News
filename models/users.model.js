@@ -16,3 +16,13 @@ exports.fetchUserByUsername = (username) => {
       return rows[0];
     });
 };
+
+exports.fetchUserComments = (username) => {
+  return db
+    .query(`SELECT * FROM comments WHERE author = $1 ORDER BY created_at`, [
+      username,
+    ])
+    .then(({ rows }) => {
+      return rows;
+    });
+};
