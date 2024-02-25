@@ -3,6 +3,7 @@ const {
   fetchUserByUsername,
   fetchUserComments,
 } = require("../models/users.model");
+const { checkUserExists } = require("../utils/utils");
 
 exports.getUsers = (req, res) => {
   fetchUsers().then((users) => {
@@ -23,8 +24,11 @@ exports.getUserByUsername = (req, res, next) => {
 
 exports.getUserComments = (req, res, next) => {
   const { username } = req.params;
-  fetchUserComments(username)
-    .then((userComments) => {
+  const userCheck = checkUserExists(username);
+  const fetchComments = fetchUserComments(username);
+  Promise.all([fetchComments, userCheck])
+    .then((results) => {
+      const userComments = results[0];
       res.status(200).send({ userComments });
     })
     .catch((err) => {

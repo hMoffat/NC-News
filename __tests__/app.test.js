@@ -629,5 +629,23 @@ describe("/api/users", () => {
           });
         });
     });
+    test("Status 200: Responds with 200 and an empty array when passed a username that has no comments", () => {
+      return request(app)
+        .get("/api/users/rogersop/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { userComments } = body;
+          expect(Array.isArray(userComments)).toBe(true);
+          expect(userComments.length).toBe(0);
+        });
+    });
+    test("Status 404: Responds with 'Not found' message, for none-existent user.", () => {
+      return request(app)
+        .get("/api/users/banana-user/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.message).toBe("Not found");
+        });
+    });
   });
 });
