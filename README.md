@@ -1,6 +1,6 @@
 # Northcoders News API
 
-See a hosted instance here: https://nc-news-zs8x.onrender.com/
+See a hosted instance here: https://nc-news-zs8x.onrender.com/api/
 
 ## What is it?
 
